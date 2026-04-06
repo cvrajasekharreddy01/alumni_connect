@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ profile_user.alumni_profile.full_name|default:profile_user.email }} - SRIT Alumni{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow border-0 overflow-hidden">
+                <div class="bg-primary p-4 text-white">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-white rounded-circle d-flex align-items-center justify-content-center me-4 shadow-sm" style="width: 100px; height: 100px; flex-shrink: 0;">
+                            <i class="fas fa-user text-primary fa-4x"></i>
+                        </div>
+                        <div>
+                            <h2 class="mb-1">{{ profile_user.alumni_profile.full_name|default:"Profile Incomplete" }}</h2>
+                            <p class="mb-0 opacity-75">{{ profile_user.email }}</p>
+                            <div class="mt-2">
+                                {% if profile_user.alumni_profile.is_verified %}
+                                <span class="badge bg-success">Verified Alumni</span>
+                                {% else %}
+                                <span class="badge bg-warning text-dark">Verification Pending</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body p-5">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <!-- 1. COLLEGE BIO -->
+                            <div class="mb-5">
+                                <h4 class="fw-bold mb-3 text-primary">🧾 COLLEGE BIO</h4>
+                                <div class="bg-light p-3 rounded shadow-sm">
+                                    <div class="row g-3">
+                                        <div class="col-sm-6">
+                                            <small class="text-muted d-block">Name</small>
+                                            <span class="fw-bold">{{ profile_user.alumni_profile.full_name|default:"---" }}</span>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <small class="text-muted d-block">Roll Number</small>
+                                            <span class="fw-bold">{{ profile_user.alumni_profile.roll_number|default:"---" }}</span>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <small class="text-muted d-block">Branch</small>
+                                            <span class="fw-bold">{{ profile_user.alumni_profile.branch|default:"---" }}</span>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <small class="text-muted d-block">Graduation Year</small>
+                                            <span class="fw-bold">{{ profile_user.alumni_profile.graduation_year|default:"---" }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 2 & 3. CAMPUS PLACEMENT -->
+                            <div class="mb-5">
+                                <h4 class="fw-bold mb-3 text-primary">🎓 CAMPUS PLACEMENT</h4>
+                                {% if profile_user.alumni_profile.campus_placed %}
+                                    {% with placement=profile_user.alumni_profile.campus_placement %}
+                                    <div class="bg-light p-4 rounded border-start border-primary border-4 shadow-sm">
+                                        <h5 class="fw-bold mb-3">Campus Placement Record</h5>
+                                        <div class="row g-3">
+                                            <div class="col-sm-6">
+                                                <small class="text-muted d-block">Company</small>
+                                                <span class="fw-bold text-primary">{{ placement.company_name }}</span>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <small class="text-muted d-block">Role</small>
+                                                <span class="fw-bold">{{ placement.job_role }}</span>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <small class="text-muted d-block">CTC</small>
+                                                <span class="fw-bold">{{ placement.ctc }}</span>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <small class="text-muted d-block">Year</small>
+                                                <span class="fw-bold">{{ placement.placement_year }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endwith %}
+                                {% else %}
+                                <div class="alert alert-light border shadow-sm">Not placed through campus recruitment.</div>
+                                {% endif %}
+                            </div>
+
+                            <!-- 4. PROFESSIONAL EXPERIENCE -->
+                            <div class="mb-4">
+                                <h4 class="fw-bold mb-3 text-primary">💼 PROFESSIONAL EXPERIENCE</h4>
+                                
+                                <h5 class="h6 text-uppercase text-muted fw-bold mb-3">Current Position</h5>
+                                {% for exp in profile_user.alumni_profile.experiences.all %}
+                                    {% if exp.is_current %}
+                                    <div class="card border-0 bg-white shadow-sm mb-4">
+                                        <div class="card-body">
+                                            <h5 class="fw-bold text-primary mb-1">{{ exp.job_role }}</h5>
+                                            <h6 class="mb-3">{{ exp.company_name }}</h6>
+                                            <hr>
+                                            <div class="row small text-muted mb-3">
+                                                <div class="col-6"><i class="fas fa-money-bill-wave me-2"></i>CTC: {{ exp.ctc|default:"Not Shared" }}</div>
+                                                <div class="col-6"><i class="fas fa-calendar-alt me-2"></i>Since {{ exp.start_date|date:"M Y" }}</div>
+                                            </div>
+                                            <p class="small mb-0">{{ exp.experience_description }}</p>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                {% endfor %}
+
+                                <h5 class="h6 text-uppercase text-muted fw-bold mb-3">Past Experience</h5>
+                                {% for exp in profile_user.alumni_profile.experiences.all %}
+                                    {% if not exp.is_current %}
+                                    <div class="mb-4 ps-3 border-start">
+                                        <h6 class="fw-bold mb-1">{{ exp.job_role }}</h6>
+                                        <p class="mb-2">{{ exp.company_name }} <span class="text-muted small">({{ exp.start_date|date:"Y" }} - {{ exp.end_date|date:"Y"|default:"Present" }})</span></p>
+                                        <p class="small text-muted mb-0">{{ exp.experience_description|truncatewords:20 }}</p>
+                                    </div>
+                                    {% endif %}
+                                {% empty %}
+                                    <p class="text-muted small">No past experience listed.</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="card bg-light border-0 sticky-top shadow-sm" style="top: 100px;">
+                                <div class="card-body p-4 text-center">
+                                    <h5 class="fw-bold mb-4">Expertise & Skills</h5>
+                                    <div>
+                                        {% for skill in profile_user.alumni_profile.skills %}
+                                        <span class="badge bg-white text-primary border shadow-sm py-2 px-3 mb-2 me-1">{{ skill }}</span>
+                                        {% endfor %}
+                                    </div>
+                                    <hr class="my-4">
+                                    <div class="d-grid gap-2">
+                                        {% if user.role != 'ADMIN' %}
+                                        <a href="{% url 'request-connection' profile_user.pk %}" class="btn btn-primary btn-lg">Connect</a>
+                                        <a href="{% url 'request-resume-review' profile_user.pk %}" class="btn btn-outline-primary">Request Review</a>
+                                        {% else %}
+                                        <p class="text-muted small">Admin Control Panel</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

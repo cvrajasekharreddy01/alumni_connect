@@ -1,0 +1,161 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SRIT Alumni Connect{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Font: Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_css %}{% endblock %}
+    <style>
+        .floating-chat-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background-color: var(--primary);
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            z-index: 1000;
+            transition: transform 0.2s;
+            text-decoration: none;
+        }
+
+        .floating-chat-btn:hover {
+            transform: scale(1.1);
+            color: var(--white);
+        }
+
+        .hover-white:hover {
+            color: var(--white) !important;
+        }
+    </style>
+</head>
+
+<body>
+    {% if user.is_authenticated %}
+    <a href="{% url 'chat-list' %}" class="floating-chat-btn" title="My Chats">
+        <i class="fas fa-comments"></i>
+    </a>
+    {% endif %}
+    <header>
+        <div class="header-top"
+            style="background-color: var(--dark-bg); color: var(--white); padding: 8px 0; border-bottom: 4px solid var(--primary);">
+            <div class="container d-flex justify-content-between">
+                <span><i class="fas fa-university me-2"></i>Srinivasa Ramanujan Institute of Technology</span>
+                <span><i class="fas fa-envelope me-2"></i>info@srit.ac.in</span>
+            </div>
+        </div>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
+            <div class="container">
+                <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
+                    <img src="https://img.icons8.com/ios-filled/50/FF6600/graduation-cap.png" alt="Logo" width="40"
+                        height="40" class="me-2">
+                    <div class="d-flex flex-column">
+                        <strong style="color: var(--dark-bg); line-height: 1; font-size: 1.2rem;">SRIT</strong>
+                        <small
+                            style="color: var(--primary); font-size: 0.7rem; font-weight: 700; letter-spacing: 1px;">
+                            <span style="color: var(--dark-bg); background: var(--white); padding: 0 4px; border-radius: 4px; font-size: 1.1rem; font-weight: 900;">A</span>LUMN<span style="color: var(--dark-bg); background: var(--white); padding: 0 4px; border-radius: 4px; font-size: 1.1rem; font-weight: 900;">I</span> CONNECT
+                        </small>
+                    </div>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+                        {% if user.is_authenticated %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'alumni-list' %}">Alumni Directory</a>
+                        </li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'event-list' %}">Events</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'job-list' %}">Jobs</a></li>
+                        <li class="nav-item ms-lg-2">
+                            <form method="post" action="{% url 'logout' %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="nav-link btn btn-link"
+                                    style="text-decoration: none; color: var(--primary) !important;">Logout</button>
+                            </form>
+                        </li>
+                        {% else %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
+                        <li class="nav-item"><a class="nav-link btn btn-primary text-white ms-2"
+                                href="{% url 'register' %}">Register</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main style="min-height: 75vh;">
+        {% if messages %}
+        <div class="container mt-4">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm border-0" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5 class="mb-4">SRIT Alumni Connect</h5>
+                    <p class="text-white-50 small">Fostering lifelong connections between SRIT alumni and students.
+                        Building a stronger professional network for the Srinivasa Ramanujan family.</p>
+                </div>
+                <div class="col-md-4">
+                    <h5 class="mb-4">Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="{% url 'event-list' %}"
+                                class="text-white-50 text-decoration-none hover-white">Upcoming Events</a></li>
+                        <li class="mb-2"><a href="{% url 'alumni-list' %}"
+                                class="text-white-50 text-decoration-none hover-white">Alumni Directory</a></li>
+                        <li class="mb-2"><a href="https://www.srit.ac.in"
+                                class="text-white-50 text-decoration-none hover-white" target="_blank">Official SRIT
+                                Site</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5 class="mb-4">Connect With Us</h5>
+                    <p class="text-white-50 small mb-3">Follow us on Instagram to stay updated with campus events and
+                        alumni news.</p>
+                    <a href="https://instagram.com/srtiatp" class="btn btn-outline-light btn-sm" target="_blank"><i
+                            class="fab fa-instagram me-2"></i>@srtiatp</a>
+                </div>
+            </div>
+            <hr class="mt-5 opacity-25">
+            <div class="text-center pt-3">
+                <p class="text-white-50 small mb-0">&copy; 2026 Srinivasa Ramanujan Institute of Technology. All Rights
+                    Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

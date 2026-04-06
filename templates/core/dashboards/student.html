@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+
+{% block title %}Student Dashboard - SRIT Alumni{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Profile Overview</h5>
+                </div>
+                <div class="card-body text-center">
+                    <i class="fas fa-user-graduate fa-5x text-primary mb-3"></i>
+                    <h5>{{ user.student_profile.full_name|default:user.email }}</h5>
+                    <p class="text-muted mb-1">{{ user.student_profile.branch|default:"Student" }}</p>
+                    <p class="small text-muted">{{ user.student_profile.roll_number|default:"" }}</p>
+                    <a href="{% url 'edit-profile' %}" class="btn btn-outline-primary btn-sm">Edit Profile</a>
+                </div>
+                {% if user.student_profile.bio or user.student_profile.resume %}
+                <div class="card-footer bg-light p-3">
+                    {% if user.student_profile.bio %}
+                    <p class="small mb-2"><strong>Bio:</strong> {{ user.student_profile.bio|truncatewords:20 }}</p>
+                    {% endif %}
+                    {% if user.student_profile.resume %}
+                    <a href="{{ user.student_profile.resume.url }}" class="btn btn-sm btn-link p-0" target="_blank">View
+                        Resume</a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="list-group shadow-sm">
+                <a href="{% url 'dashboard' %}" class="list-group-item list-group-item-action active">Dashboard</a>
+                <a href="{% url 'alumni-list' %}" class="list-group-item list-group-item-action">Find Mentors</a>
+                <a href="{% url 'event-list' %}" class="list-group-item list-group-item-action">My Events</a>
+                <a href="{% url 'resume-review-list' %}" class="list-group-item list-group-item-action">Resume Review</a>
+                <a href="{% url 'job-list' %}" class="list-group-item list-group-item-action">Job Postings</a>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            <h3 class="mb-4">Student Dashboard</h3>
+
+            {% if accepted_connections %}
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <div class="card shadow-sm border-success">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">My Alumni Mentors</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                {% for conn in accepted_connections %}
+                                <div class="col-md-6 mb-3">
+                                    <div class="d-flex align-items-center p-3 border rounded">
+                                        <i class="fas fa-user-circle fa-3x text-secondary me-3"></i>
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-0">{{ conn.alumni.alumni_profile.full_name|default:conn.alumni.email }}</h6>
+                                            <small class="text-muted">{{ conn.alumni.alumni_profile.branch }} | Class of {{ conn.alumni.alumni_profile.graduation_year }}</small>
+                                        </div>
+                                        <div class="ms-auto">
+                                            {% if conn.chat_room_id %}
+                                            <a href="{% url 'chat-room' conn.chat_room_id %}" class="btn btn-primary btn-sm">
+                                                <i class="fas fa-comment"></i> Chat Now
+                                            </a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0 text-primary">Recommended Alumni for You</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                {% for rec in recommendations %}
+                                <div class="col-md-4 mb-3">
+                                    <div class="card h-100 border-primary">
+                                        <div class="card-body">
+                                            <h6>{{ rec.alumni.email }}</h6>
+                                            <p class="small text-muted mb-1">{{ rec.alumni.alumni_profile.job_role }} at
+                                                {{
+                                                rec.alumni.alumni_profile.company }}</p>
+                                            <span class="badge bg-success mb-2">{{ rec.score|floatformat:1 }}%
+                                                Match</span>
+                                            <p class="small">{{ rec.reasons }}</p>
+                                            <a href="{% url 'request-connection' rec.alumni.pk %}"
+                                                class="btn btn-primary btn-sm w-100">Connect</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% empty %}
+                                <div class="col-12">
+                                    <p class="text-muted">No recommendations available. Complete your profile to get
+                                        matched!</p>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0 text-primary">Recent Announcements</h5>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            {% for announcement in announcements %}
+                            <li class="list-group-item">
+                                <small class="text-muted">{{ announcement.created_at|date:"M d" }}</small><br>
+                                <strong>{{ announcement.title }}</strong>
+                            </li>
+                            {% empty %}
+                            <li class="list-group-item">No announcements.</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0 text-primary">Notifications</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted">No new notifications.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

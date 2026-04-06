@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block title %}Alumni Dashboard - SRIT Alumni{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-3">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Profile Overview</h5>
+            </div>
+            <div class="card-body text-center">
+                <i class="fas fa-user-tie fa-5x text-primary mb-3"></i>
+                <h5>{{ user.email }}</h5>
+                <p class="text-muted">Alumni</p>
+                <div class="mb-2">
+                    {% if user.alumni_profile.is_verified %}
+                    <span class="badge bg-success">Verified</span>
+                    {% else %}
+                    <span class="badge bg-warning text-dark">Verification Pending</span>
+                    {% endif %}
+                </div>
+                <a href="{% url 'edit-profile' %}" class="btn btn-outline-primary btn-sm">Edit Profile</a>
+            </div>
+            {% if user.alumni_profile.bio or user.alumni_profile.placements.exists %}
+            <div class="card-footer bg-light p-3">
+                {% if user.alumni_profile.bio %}
+                <p class="small mb-2"><strong>Bio:</strong> {{ user.alumni_profile.bio|truncatewords:20 }}</p>
+                {% endif %}
+                {% if user.alumni_profile.placements.exists %}
+                <p class="small mb-0 text-success"><strong>{{ user.alumni_profile.placements.count }}</strong> Placement
+                    Records</p>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="list-group shadow-sm">
+            <a href="{% url 'dashboard' %}" class="list-group-item list-group-item-action active">Dashboard</a>
+            <a href="#"
+                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                Mentorship Requests
+                <span class="badge bg-primary rounded-pill">{{ pending_connections.count }}</span>
+            </a>
+            <a href="{% url 'resume-review-list' %}"
+                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                Resume Reviews
+                <span class="badge bg-info rounded-pill">{{ pending_reviews_count }}</span>
+            </a>
+            <a href="{% url 'event-list' %}" class="list-group-item list-group-item-action">My Events</a>
+        </div>
+    </div>
+
+    <div class="col-md-9">
+        <h3 class="mb-4">Alumni Dashboard</h3>
+    </div>
+    <div class="col-auto">
+        <a href="{% url 'event-create' %}" class="btn btn-success">Host an Event</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card border-primary shadow-sm">
+            <div class="card-body text-center">
+                <h1 class="display-4 text-primary">{{ total_mentees }}</h1>
+                <p class="text-muted mb-0">Total Mentees</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card border-primary shadow-sm">
+            <div class="card-body text-center">
+                <h1 class="display-4 text-primary">{{ events_hosted|default:0 }}</h1>
+                <p class="text-muted mb-0">Events Hosted</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card border-primary shadow-sm">
+            <div class="card-body text-center">
+                <h1 class="display-4 text-primary">{{ profile_views|default:0 }}</h1>
+                <p class="text-muted mb-0">Profile Views</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 text-primary">Recent Mentorship Requests</h5>
+        <a href="#" class="btn btn-link btn-sm">View All</a>
+    </div>
+    <div class="card-body">
+        {% if pending_connections %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for conn in pending_connections %}
+                    <tr>
+                        <td>{{ conn.student.email }}</td>
+                        <td>{{ conn.created_at|date:"d M Y" }}</td>
+                        <td>
+                            <a href="{% url 'accept-connection' conn.id %}" class="btn btn-sm btn-success">Accept</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-center text-muted my-4">No active mentorship requests at the moment.</p>
+        {% endif %}
+</div>
+{% endblock %}

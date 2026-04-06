@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Welcome - SRIT Alumni Connect{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                <h1 class="hero-title">Empowering the <span class="text-primary">SRIT Anantapur</span> Community.</h1>
+                <p class="hero-subtitle">Bridging the gap between our brilliant students and esteemed alumni. Foster
+                    lifelong connections, mentorship, and professional growth in the Srinivasa Ramanujan family.</p>
+                <div class="d-flex flex-wrap gap-3">
+                    {% if not user.is_authenticated %}
+                    <a href="{% url 'register' %}" class="btn btn-primary btn-lg">Join the Network</a>
+                    <a href="{% url 'login' %}" class="btn btn-outline-light btn-lg">Sign In</a>
+                    {% else %}
+                    <a href="{% url 'dashboard' %}" class="btn btn-primary btn-lg">Access Dashboard</a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-5 d-none d-lg-block">
+                <div class="p-5">
+                    <img src="https://img.icons8.com/wired/512/FFFFFF/university.png" alt="University Icon"
+                        class="img-fluid opacity-25">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Ribbon -->
+<section class="stats-section">
+    <div class="container">
+        <div class="row text-center gy-4">
+            <div class="col-md-4 stat-item">
+                <h2>1000+</h2>
+                <p>Alumni Connected</p>
+            </div>
+            <div class="col-md-4 stat-item">
+                <h2>500+</h2>
+                <p>Career Opportunities</p>
+            </div>
+            <div class="col-md-4 stat-item">
+                <h2>50+</h2>
+                <p>Annual Events</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="section-padding bg-white">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">Why Join Our Network?</h2>
+            <div class="orange-line mx-auto"></div>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <i class="fas fa-user-friends feature-icon"></i>
+                    <h3>Lifelong Connections</h3>
+                    <p class="text-muted">Stay connected with your classmates and batchmates through our secure
+                        directory. Build a network that lasts a lifetime.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <i class="fas fa-handshake feature-icon"></i>
+                    <h3>Expert Mentorship</h3>
+                    <p class="text-muted">Students can connect with senior alumni for career guidance, resume reviews,
+                        and industry insights in real-time.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <i class="fas fa-calendar-check feature-icon"></i>
+                    <h3>Exclusive Events</h3>
+                    <p class="text-muted">Get early-bird access to college reunions, technical workshops, and campus
+                        recruitment drives specifically for our community.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Latest Announcements Section -->
+{% if announcements %}
+<section class="section-padding bg-orange-light">
+    <div class="container">
+        <div class="row align-items-center mb-5">
+            <div class="col-md-6">
+                <h2 class="section-title">Latest Updates</h2>
+                <div class="orange-line"></div>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <a href="#" class="btn btn-outline-primary">View All Announcements</a>
+            </div>
+        </div>
+        <div class="row g-4">
+            {% for announcement in announcements|slice:":3" %}
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <small class="text-primary fw-bold">{{ announcement.created_at|date:"F d, Y" }}</small>
+                        <h4 class="mt-2">{{ announcement.title }}</h4>
+                        <p class="text-muted small">{{ announcement.message|truncatewords:20 }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Final CTA Section -->
+<section class="section-padding cta-section text-center">
+    <div class="container">
+        <h2 class="mb-4 fw-bold">Ready to connect with the Srinivasa Ramanujan Family?</h2>
+        <p class="lead text-muted mb-5">Join our exclusive alumni portal today and be part of the SRIT legacy.</p>
+        {% if not user.is_authenticated %}
+        <a href="{% url 'register' %}" class="btn btn-primary btn-lg px-5">Get Started Now</a>
+        {% else %}
+        <a href="{% url 'dashboard' %}" class="btn btn-primary btn-lg px-5">Back to Dashboard</a>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

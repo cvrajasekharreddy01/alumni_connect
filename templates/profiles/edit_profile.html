@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Edit Profile - SRIT Alumni{% endblock %}
+
+{% block extra_css %}
+<style>
+    .section-header {
+        border-bottom: 2px solid var(--primary);
+        padding-bottom: 8px;
+        margin-bottom: 20px;
+    }
+    .card-section {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 25px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-9">
+            <div class="card shadow border-0">
+                <div class="card-header bg-primary text-white p-4">
+                    <h3 class="mb-0">Update Alumni Profile</h3>
+                </div>
+                <div class="card-body p-4">
+                    {% if user.role == 'STUDENT' %}
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="section-header">
+                            <h4 class="mb-0">👤 Student Information</h4>
+                        </div>
+                        <div class="card-section">
+                            <div class="row">
+                                <div class="col-md-6">{{ form.full_name|as_crispy_field }}</div>
+                                <div class="col-md-6">{{ form.roll_number|as_crispy_field }}</div>
+                                <div class="col-md-6">{{ form.department|as_crispy_field }}</div>
+                                <div class="col-md-6">{{ form.branch|as_crispy_field }}</div>
+                                <div class="col-md-6">{{ form.graduation_year|as_crispy_field }}</div>
+                                <div class="col-md-6">{{ form.career_interest|as_crispy_field }}</div>
+                            </div>
+                        </div>
+
+                        <div class="section-header">
+                            <h4 class="mb-0">🎯 Skills & Interests</h4>
+                        </div>
+                        <div class="card-section">
+                            {{ form.skills|as_crispy_field }}
+                            {{ form.interests|as_crispy_field }}
+                            {{ form.bio|as_crispy_field }}
+                            {{ form.resume|as_crispy_field }}
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg py-3">Update Student Profile</button>
+                            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                    {% elif user.role == 'ALUMNI' %}
+                    <form method="post" enctype="multipart/form-data" id="profileForm">
+                        {% csrf_token %}
+                        
+                        <!-- 1. COLLEGE BIO -->
+                        <div class="section-header">
+                            <h4 class="mb-0">🧾 1. COLLEGE BIO SECTION</h4>
+                        </div>
+                        <div class="card-section">
+                            <div class="row">
+                                <div class="col-md-6">{{ form.full_name|as_crispy_field }}</div>
+                                <div class="col-md-6">{{ form.roll_number|as_crispy_field }}</div>
+                                <div class="col-md-6">{{ form.branch|as_crispy_field }}</div>
+                                <div class="col-md-6">{{ form.graduation_year|as_crispy_field }}</div>
+                            </div>
+                        </div>
+
+                        <!-- 2. CAMPUS PLACEMENT STATUS -->
+                        <div class="section-header">
+                            <h4 class="mb-0">🎓 2. CAMPUS PLACEMENT STATUS</h4>
+                        </div>
+                        <div class="card-section">
+                            {{ form.campus_placed|as_crispy_field }}
+                        </div>
+
+                        <!-- 3. CAMPUS PLACEMENT RECORD -->
+                        <div id="placementSection" style="display: none;">
+                            <div class="section-header">
+                                <h4 class="mb-0">🏢 3. CAMPUS PLACEMENT RECORD</h4>
+                            </div>
+                            <div class="card-section">
+                                <div class="row">
+                                    <div class="col-md-6">{{ placement_form.company_name|as_crispy_field }}</div>
+                                    <div class="col-md-6">{{ placement_form.job_role|as_crispy_field }}</div>
+                                    <div class="col-md-6">{{ placement_form.ctc|as_crispy_field }}</div>
+                                    <div class="col-md-6">{{ placement_form.placement_year|as_crispy_field }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 4. PROFESSIONAL EXPERIENCE -->
+                        <div class="section-header">
+                            <h4 class="mb-0">💼 4. PROFESSIONAL EXPERIENCE</h4>
+                        </div>
+                        <div class="card-section">
+                            {{ formset.management_form }}
+                            <div id="experienceList">
+                                {% for f in formset %}
+                                <div class="experience-item border-bottom mb-4 pb-3">
+                                    <div class="row">
+                                        <div class="col-md-6">{{ f.company_name|as_crispy_field }}</div>
+                                        <div class="col-md-6">{{ f.job_role|as_crispy_field }}</div>
+                                        <div class="col-md-4">{{ f.ctc|as_crispy_field }}</div>
+                                        <div class="col-md-4">{{ f.start_date|as_crispy_field }}</div>
+                                        <div class="col-md-4">{{ f.end_date|as_crispy_field }}</div>
+                                        <div class="col-12">{{ f.is_current|as_crispy_field }}</div>
+                                        <div class="col-12">{{ f.experience_description|as_crispy_field }}</div>
+                                        {% if f.instance.pk %}
+                                        <div class="col-12">{{ f.DELETE|as_crispy_field }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Other fields -->
+                        <div class="section-header">
+                            <h4 class="mb-0">Other Information</h4>
+                        </div>
+                        <div class="card-section">
+                            {{ form.skills|as_crispy_field }}
+                            {{ form.bio|as_crispy_field }}
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg py-3">Save Final Profile</button>
+                            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const campusPlacedCheckbox = document.querySelector('#id_campus_placed');
+        const placementSection = document.getElementById('placementSection');
+
+        function togglePlacement() {
+            if (campusPlacedCheckbox.checked) {
+                placementSection.style.display = 'block';
+            } else {
+                placementSection.style.display = 'none';
+            }
+        }
+
+        campusPlacedCheckbox.addEventListener('change', togglePlacement);
+        togglePlacement(); // Initial call
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Approval Pending - Alumni Connect{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 text-center mt-5">
+        <div class="card shadow-sm p-5 border-warning">
+            <div class="card-body">
+                <img src="https://img.icons8.com/isometric/100/warning-shield.png" alt="Warning" class="mb-4">
+                <h2 class="text-warning">Approval Pending</h2>
+                <p class="lead mt-3">Thank you for registering! Your account is currently under review by the college
+                    administration.</p>
+                <p>You will be able to access the portal once your profile has been verified and approved.</p>
+                <hr>
+                <p class="text-muted">Please check back later or contact the alumni office for more information.</p>
+                <a href="{% url 'dashboard' %}" class="btn btn-primary mt-3">Check Approval Status</a>
+                <a href="{% url 'home' %}" class="btn btn-outline-secondary mt-3 ms-2">Return to Home</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

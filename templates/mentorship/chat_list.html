@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}My Chats - Alumni Connect{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Messages</h4>
+            </div>
+            <div class="list-group list-group-flush">
+                {% for room in rooms %}
+                <a href="{% url 'chat-room' room.id %}" class="list-group-item list-group-item-action p-4">
+                    <div class="d-flex w-100 justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                            <img src="https://img.icons8.com/color/48/000000/user.png" class="me-3" alt="User">
+                            <div>
+                                <h5 class="mb-1">
+                                    {% if user.role == 'STUDENT' %}
+                                    {{ room.alumni.email }}
+                                    {% else %}
+                                    {{ room.student.email }}
+                                    {% endif %}
+                                </h5>
+                                <p class="text-muted mb-0 small">
+                                    {% if room.messages.last %}
+                                    {{ room.messages.last.message|truncatechars:50 }}
+                                    {% else %}
+                                    Start a conversation
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                        <small class="text-muted">{{ room.messages.last.timestamp|date:"d M H:i" }}</small>
+                    </div>
+                </a>
+                {% empty %}
+                <div class="text-center p-5">
+                    <img src="https://img.icons8.com/color/96/000000/no-message.png" alt="No messages" class="mb-3">
+                    <p class="text-muted">No active conversations yet.</p>
+                    <p class="small">Connect with alumni to start chatting!</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
